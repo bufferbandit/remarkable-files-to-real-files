@@ -1,4 +1,37 @@
+from RemarkableFile import RemarkableFile
+from os import listdir
+
+
 class RemarkableFlatFileSystem(set):
+
+    def __init__(self, PATH_TO_RM_FILES_IN):
+        self.PATH_TO_RM_FILES_IN = PATH_TO_RM_FILES_IN
+        self.populate_filesystem()
+        self.match_parents_to_children()
+
+    def populate_filesystem(self):
+        for file_path in listdir(self.PATH_TO_RM_FILES_IN):
+            if "." in file_path:
+                # Split file
+                file_name, file_ext, *_ = file_path.split(".")
+                if file_ext in {"thumbnails", "pdf", "epub", "metadata",
+                                "pagedata", "content", "downloading"}:
+
+                    # Create remarkable file
+                    remarkable_file = self[file_name] \
+                        if file_name in self \
+                        else RemarkableFile(file_hash=file_name)
+
+                    # Add rmfile to remarkable filesystem
+                    if file_ext != "pagedata" or file_ext != "epubindex":
+                        remarkable_file.file_extensions.add(file_ext)
+
+                    remarkable_file.file_paths.add(self.PATH_TO_RM_FILES_IN + file_path)
+                    remarkable_file.set_all_data()
+
+                    # Append
+                    self.add(remarkable_file)
+
     def __contains__(self, key):
         if type(key) is str:
             return any(x for x in self if x.file_hash == key)
@@ -9,7 +42,7 @@ class RemarkableFlatFileSystem(set):
         if type(i) is str:
             return list(x for x in self if x.file_hash == i)[0]
         elif type(i) is int:
-            return super().__getitem__(i)
+            return list(self)[i]
 
     def __setitem__(self, i, v):
         print(i, v)
@@ -19,90 +52,20 @@ class RemarkableFlatFileSystem(set):
             if file.parent_id == parent_id:
                 yield file
 
-    # def traverse_filesystem_recursively(self,parent_id):
-    #     for x in self:
-    #         if x.parent_id == parent_id:
-    #             print(x.rm_file_name)
-    #             self.traverse_filesystem_recursively(x.file_hash)
-    #         else:
-    #             continue
+    def get_children_for_parent(self, parent):
+        for file in self:
+            parent = self[0]
+            if file.parent == parent:
+                yield file
 
-    def recursive_method(self, files, path=""):
-        for file in files:
+    def match_parents_to_children(self):
+        for file in [file for file in self if file.file_type == "collection"]:
             this_folder_children = self.get_children_for_parent_id(file.file_hash)
-            child_folders = []
-            folder_path = ""
-
-            # Loop through all the children of this folder
             for child_file in this_folder_children:
                 child_file.parent_id = file.file_hash
+                child_file.parent = file
+                child_file.real_file_path = child_file.recursively_get_parents() + f"{child_file.rm_file_name}.{child_file.file_type}"
 
-                # If child is a folder or in root
-                if child_file.file_type == "collection" or not file.parent_id:
-                    child_folders.append(child_file)
-                    if not file.parent_id:
-                        folder_path = child_file.rm_file_name
-                    else:
-                        folder_path = f"{path}/{child_file.rm_file_name}"
-                    self.recursive_method(child_folders, folder_path)
-
-                # # Root
-                # if not file.parent_id:
-                #     folder_path = f"{child_file.rm_file_name}/"
-                #     self.recursive_method(child_folders, path)
-                else:
-                    print(f"{path}/{child_file.rm_file_name}.{child_file.file_type}")
-
-
-
-                    #print(child_file.rm_file_name)
-               # print(f"{path}/{child_file.rm_file_name}.{child_file.file_type}")
-
-
-
-            # newpath = ""
-            # if file.file_type == "collection":
-            #     child_folders = []
-            #     for child in this_folder_children:
-            #         child.parent_id = file.file_hash
-            #         if child.file_type == "collection":
-            #             child_folders.append(child)
-            #             newpath = f"{path}/{child.rm_file_name}"
-            #
-            #     self.recursive_method(child_folders,newpath)
-            # else:
-            #     print(file.rm_file_name)
-
-                    # self.recursive_method(this_folder_children)
-
-    # def pair_children_with_parents(self):
-    #     for file in self:
-    #         if file.file_type == "collection":
-    #             # Get the root folders
-    #             if not file.parent_id:
-    #                 # get children from root files and loop recursively from there on
-    #                 for child in self.get_children_for_parent_id(file.file_hash):
-    #                     child.parent_id = file.file_hash
-    #                     print(child.rm_file_name)
-
-    # print(x.rm_file_name)
-    # self.get_children_for_parent_id(x.file_hash)))
-    # for y in l2:
-    #     print(y.rm_file_name)
-
-#    def add(self, v):
-#     if True:#v.metadata:  # and v.content_data:
-#         return super().add(v)
-
-# def append(self, v):
-#     print(v.metadata)
-#     if v not in list(self):
-#         return super().append(v)
-#     else:
-#         return self.update(v)
-#
-
-#     def insert(self, i, v):pass
 #     def __len__(self): return len(self.list)
 #     def __getitem__(self, i): return self.list[i]
 #     def __delitem__(self, i): del self.list[i]
