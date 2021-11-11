@@ -2,20 +2,30 @@ from json import load
 
 
 class RemarkableFile:
-    def __init__(self, file_hash):
+
+    def __init__(self, file_hash, root="/"):
         self.file_hash = file_hash
-        self.file_extensions = set()
-        self.file_paths = set()
-        self.file_type = ""
-        self.file_name = ""
-        self.rm_file_name = ""
-        self.parent_id = ""
-        self.real_file_path = ""
-        self.final_file_path = ""
+
+        # Parent data
+        self.parent_file_hash = ""
         self.parent_rm_file = None
-        self.metadata = None
-        self.content_data = None
-        self.parent = None
+
+        # Real file data
+        self.real_file_extensions = set()
+        self.real_file_paths = set()
+        self.real_file_path = ""
+
+        # Remarkable file attributes
+        self.rm_parent_path = ""
+        self.rm_file_name = ""
+        self.rm_file_type = ""
+        self.rm_file_path = ""
+
+        # Metadata about rm file
+        self.rm_file_metadata = None
+        self.rm_file_content_data = None
+
+        self.root = root
 
     def __hash__(self):
         return hash(self.file_hash)
@@ -30,40 +40,39 @@ class RemarkableFile:
             return self.file_hash != other.file_hash
         return super().__ne__(other)
 
-    def recursively_get_parents(self, root="/"):
-        if self.parent:
-            return self.parent.recursively_get_parents() + self.parent.rm_file_name + "/"
-        return root
+    def recursively_get_parents(self):
+        if self.parent_rm_file:
+            return self.parent_rm_file.recursively_get_parents() + self.parent_rm_file.rm_file_name + "/"
+        return self.root
 
     def get_metadata_file(self):
-        for file_name in self.file_paths:
+        for file_name in self.real_file_paths:
             if file_name.endswith(".metadata"):
                 with open(file_name, "r") as f:
                     return load(f)
 
     def get_content_file(self):
-        for file_name in self.file_paths:
+        for file_name in self.real_file_paths:
             if file_name.endswith(".content"):
                 with open(file_name, "r") as f:
                     return load(f)
 
     def set_all_data(self):
-        self.metadata = self.get_metadata_file()
-        if self.metadata:
-            self.rm_file_name = self.metadata["visibleName"]
-            self.parent_id = self.metadata["parent"]
-        self.content_data = self.get_content_file()
-        self.file_type = self.determine_filetype()
-        for path in self.file_paths:
-            if self.file_type == "pdf" and path.endswith("pdf"):
-                self.real_file_path = path
-            elif self.file_type == "epub" and path.endswith(".epub"):
+        self.rm_file_metadata = self.get_metadata_file()
+        if self.rm_file_metadata:
+            self.rm_file_name = self.rm_file_metadata["visibleName"]
+            self.parent_file_hash = self.rm_file_metadata["parent"]
+        self.rm_file_content_data = self.get_content_file()
+        self.rm_file_type = self.determine_filetype()
+        for path in self.real_file_paths:
+            if self.rm_file_type == "pdf" and path.endswith("pdf") \
+                    or self.rm_file_type == "epub" and path.endswith(".epub"):
                 self.real_file_path = path
 
     def determine_filetype(self):
-        if self.file_extensions == {"content", "metadata"}:
+        if self.real_file_extensions == {"content", "metadata"}:
             return "collection"
-        if {"downloading"}.issubset(self.file_extensions):
+        if {"downloading"}.issubset(self.real_file_extensions):
             return "downloading"
-        if self.content_data:
-            return self.content_data["fileType"]
+        if self.rm_file_content_data:
+            return self.rm_file_content_data["fileType"]
