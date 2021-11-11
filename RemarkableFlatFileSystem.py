@@ -43,9 +43,9 @@ class RemarkableFlatFileSystem(set):
         elif type(i) is int:
             return list(self)[i]
 
-    def get_children_for_parent_id(self, parent_id):
+    def get_children_for_parent_file_hash(self, file_hash):
         for file in self:
-            if file.parent_file_hash == parent_id:
+            if file.parent_file_hash == file_hash:
                 yield file
 
     def get_children_for_parent(self, parent):

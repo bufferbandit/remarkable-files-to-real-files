@@ -1,14 +1,15 @@
 from RemarkableFlatFileSystem import RemarkableFlatFileSystem
 from distutils.dir_util import mkpath
 from os import path, symlink
+from sys import argv
 
-IN_PATH = "~/remarkable-files-to-real-files/data/remarkable/xochitl/"
-OUT_PATH = "~/remarkable-files-to-real-files/syms/"
+IN_PATH = argv[1]
+OUT_PATH = argv[2]
 
 
-def create_dir_if_not_exists(dir):
-    if not path.exists(dir):
-        mkpath(dir)
+def create_dir_if_not_exists(directory):
+    if not path.exists(directory):
+        mkpath(directory)
 
 
 def create_symlink_for_rm_file(rm_file):
