@@ -22,15 +22,13 @@ class RemarkableFlatFileSystem(set):
                     remarkable_file = self[file_name] if file_name in self \
                         else RemarkableFile(file_hash=file_name, root=self.PATH_TO_RM_FILES_OUT)
 
-                    # Add rmfile to remarkable filesystem
-                    if file_ext != "pagedata" or file_ext != "epubindex":
-                        remarkable_file.real_file_extensions.add(file_ext)
-
+                    remarkable_file.real_file_extensions.add(file_ext)
                     remarkable_file.real_file_paths.add(self.PATH_TO_RM_FILES_IN + file_path)
                     remarkable_file.set_all_data()
 
                     if remarkable_file.rm_file_metadata and remarkable_file.rm_file_metadata["parent"] != "trash":
                         self.add(remarkable_file)
+
 
     def __contains__(self, key):
         if type(key) is str:

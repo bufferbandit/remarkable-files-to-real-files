@@ -71,8 +71,10 @@ class RemarkableFile:
 
     def determine_filetype(self):
         if self.real_file_extensions == {"content", "metadata"}:
-            return "collection"
+            return "Collection"
         if {"downloading"}.issubset(self.real_file_extensions):
-            return "downloading"
+            return "Downloading"
         if self.rm_file_content_data:
             return self.rm_file_content_data["fileType"]
+        if self.rm_file_metadata:
+            return self.rm_file_metadata["type"]
