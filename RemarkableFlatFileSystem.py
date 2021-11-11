@@ -29,8 +29,8 @@ class RemarkableFlatFileSystem(set):
                     remarkable_file.real_file_paths.add(self.PATH_TO_RM_FILES_IN + file_path)
                     remarkable_file.set_all_data()
 
-                    # Append
-                    self.add(remarkable_file)
+                    if remarkable_file.rm_file_metadata and remarkable_file.rm_file_metadata["parent"] != "trash":
+                        self.add(remarkable_file)
 
     def __contains__(self, key):
         if type(key) is str:
