@@ -8,6 +8,7 @@ class RemarkableFlatFileSystem(set):
         self.PATH_TO_RM_FILES_IN = PATH_TO_RM_FILES_IN
         self.populate_filesystem()
         self.match_parents_to_children()
+        self.determine_final_file_paths()
 
     def populate_filesystem(self):
         for file_path in listdir(self.PATH_TO_RM_FILES_IN):
@@ -35,17 +36,13 @@ class RemarkableFlatFileSystem(set):
     def __contains__(self, key):
         if type(key) is str:
             return any(x for x in self if x.file_hash == key)
-        else:
-            return super().__contains__(key)
+        return super().__contains__(key)
 
     def __getitem__(self, i):
         if type(i) is str:
             return list(x for x in self if x.file_hash == i)[0]
         elif type(i) is int:
             return list(self)[i]
-
-    def __setitem__(self, i, v):
-        print(i, v)
 
     def get_children_for_parent_id(self, parent_id):
         for file in self:
@@ -59,15 +56,12 @@ class RemarkableFlatFileSystem(set):
                 yield file
 
     def match_parents_to_children(self):
-        for file in [file for file in self if file.file_type == "collection"]:
-            this_folder_children = self.get_children_for_parent_id(file.file_hash)
-            for child_file in this_folder_children:
-                child_file.parent_id = file.file_hash
-                child_file.parent = file
-                child_file.real_file_path = child_file.recursively_get_parents() + f"{child_file.rm_file_name}.{child_file.file_type}"
+        for file in self:
+            try:
+                file.parent = self[file.parent_id]
+            except IndexError:
+                pass
 
-#     def __len__(self): return len(self.list)
-#     def __getitem__(self, i): return self.list[i]
-#     def __delitem__(self, i): del self.list[i]
-#     def __setitem__(self, i, v): self.list[i] = v
-#     def __str__(self): return str(self.list)
+    def determine_final_file_paths(self):
+        for file in self:
+            file.final_file_path = file.recursively_get_parents() + f"{file.rm_file_name}.{file.file_type}"

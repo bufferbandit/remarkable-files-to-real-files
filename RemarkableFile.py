@@ -11,11 +11,11 @@ class RemarkableFile:
         self.rm_file_name = ""
         self.parent_id = ""
         self.real_file_path = ""
+        self.final_file_path = ""
         self.parent_rm_file = None
         self.metadata = None
         self.content_data = None
         self.parent = None
-        self.children = []
 
     def __hash__(self):
         return hash(self.file_hash)
@@ -33,8 +33,7 @@ class RemarkableFile:
     def recursively_get_parents(self, root="/"):
         if self.parent:
             return self.parent.recursively_get_parents() + self.parent.rm_file_name + "/"
-        else:
-            return root
+        return root
 
     def get_metadata_file(self):
         for file_name in self.file_paths:
