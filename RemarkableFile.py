@@ -76,5 +76,9 @@ class RemarkableFile:
             return "Downloading"
         if self.rm_file_content_data:
             return self.rm_file_content_data["fileType"]
+        if "epub" in self.real_file_extensions:
+            return "epub"
+        if "pdf" in self.real_file_extensions:
+            return "pdf"
         if self.rm_file_metadata:
             return self.rm_file_metadata["type"]
