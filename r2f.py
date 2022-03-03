@@ -16,7 +16,7 @@ def create_dir_if_not_exists(directory):
 def create_symlink_for_rm_file(rm_file):
     if not path.exists(rm_file.rm_file_path) \
             and bool(rm_file.real_file_path)\
-            # TODO: Check this propperly.
+            # TODO: Check if one of the parent folders starts with a dot.
             and not ".hidden." in rm_file.rm_file_path:
         try:
             symlink(rm_file.real_file_path, rm_file.rm_file_path)
