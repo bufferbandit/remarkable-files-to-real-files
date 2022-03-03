@@ -4,8 +4,8 @@ from distutils.dir_util import mkpath
 from os import path, symlink
 from sys import argv
 
-IN_PATH = argv[1] if len(argv) >= 1  else "/home/root/.local/share/remarkable/xochitl/" 
-OUT_PATH = argv[2] if len(argv) >= 2  else "/home/root/rmfile/"
+IN_PATH = argv[1] if len(argv) > 1  else "/home/root/.local/share/remarkable/xochitl/" 
+OUT_PATH = argv[2] if len(argv) > 2  else "/home/root/rmfile/"
 
 
 def create_dir_if_not_exists(directory):
