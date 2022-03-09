@@ -7,7 +7,6 @@ from sys import argv
 IN_PATH = argv[1] if len(argv) > 1  else "/home/root/.local/share/remarkable/xochitl/" 
 OUT_PATH = argv[2] if len(argv) > 2  else "/home/root/rmfile/"
 
-
 def create_dir_if_not_exists(directory):
     if not path.exists(directory):
         mkpath(directory)
@@ -16,8 +15,7 @@ def create_dir_if_not_exists(directory):
 def create_symlink_for_rm_file(rm_file):
     if not path.exists(rm_file.rm_file_path) \
             and bool(rm_file.real_file_path)\
-            and not ".hidden." in rm_file.rm_file_path:
-            # TODO: Check if one of the parent folders starts with a dot.
+            and not any(item.startswith(".") for item in rm_file.rm_filepath_parent_files):
         try:
             symlink(rm_file.real_file_path, rm_file.rm_file_path)
             print(f"└─> Symlink success!\n")

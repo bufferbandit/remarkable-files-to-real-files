@@ -19,7 +19,31 @@ class RemarkableFile:
         self.rm_parent_path = ""
         self.rm_file_name = ""
         self.rm_file_type = ""
-        self.rm_file_path = ""
+
+
+        # Remarkable filepath parts
+        self.rm_filepath_parts = []
+        self.rm_filepath_parent_files = []
+
+
+        # Use getters and setters for  to set filepath as to 
+        #  set filepath parrents simultaniously
+        @rm_file_path.setter
+        def rm_file_path(self, val):
+            if val: 
+                self._rm_file_path = val
+                self.rm_filepath_parts = self._rm_file_path.split("/")
+                self.rm_filepath_parent_files = self.rm_filepath_parts[:-1]
+
+        @property
+        def rm_file_path(self): 
+            return self._rm_file_path
+
+        
+
+
+
+        # self.rm_file_path = ""
 
         # Metadata about rm file
         self.rm_file_metadata = None
