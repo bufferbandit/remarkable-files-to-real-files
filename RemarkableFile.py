@@ -28,6 +28,11 @@ class RemarkableFile:
 
         # Use getters and setters for  to set filepath as to 
         #  set filepath parrents simultaniously
+        @property
+        def rm_file_path(self): 
+            return self._rm_file_path
+
+
         @rm_file_path.setter
         def rm_file_path(self, val):
             if val: 
@@ -35,9 +40,7 @@ class RemarkableFile:
                 self.rm_filepath_parts = self._rm_file_path.split("/")
                 self.rm_filepath_parent_files = self.rm_filepath_parts[:-1]
 
-        @property
-        def rm_file_path(self): 
-            return self._rm_file_path
+        
 
         
 
