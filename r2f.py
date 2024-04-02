@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from RemarkableFlatFileSystem import RemarkableFlatFileSystem
 from distutils.dir_util import mkpath
+from shutil import copy
+
 from os import path, symlink
 from sys import argv
 
@@ -18,11 +20,34 @@ def create_symlink_for_rm_file(rm_file):
             and bool(rm_file.real_file_path)\
             and (SUPPORT_HIDDEN_FILES and 
                     not any(item.startswith(".") for item in rm_file.rm_filepath_parent_files)):
-        try:
-            symlink(rm_file.real_file_path, rm_file.rm_file_path)
+        if 1:
+        #try:
+            # symlink(rm_file.real_file_path, rm_file.rm_file_path)
+            # TODO: Find a more elegant way to switch the copying/symlinking implementation (eg. providing it as a callback)
+            copy(
+                            rm_file.real_file_path,
+                            rm_file.rm_file_path
+                                    .replace("|","")
+                                    .replace("+","")
+                                    .replace(",","") 
+                                    .replace("&","") 
+                                    .replace(":","") 
+                                    .replace("藏","") 
+                                    .replace("海","") 
+                                    .replace("花","") 
+                                    .replace("\n","") 
+                                    .replace("?","") 
+                                    .replace("https//","https")
+                                    .replace("http//","http")
+                                    .replace("\"","")
+                                    .replace(">","")
+                                    .replace("<","")
+                                    .replace("=","")
+                                    .replace("*","")
+                            )        
             print(f"└─> Symlink success!\n")
-        except FileNotFoundError:
-            print(f"└─> Symlink failed\n")
+        #except FileNotFoundError:
+            #print(f"└─> Symlink failed\n")
     else:
         print(f"└─> File already exists\n")
 
