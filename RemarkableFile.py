@@ -75,19 +75,21 @@ class RemarkableFile:
     def get_metadata_file(self):
         for file_name in self.real_file_paths:
             if file_name.endswith(".metadata"):
-                with open(file_name, "r") as f:
+                with open(file_name, "r", encoding="utf-8") as f:
                     return load(f)
 
     def get_content_file(self):
         for file_name in self.real_file_paths:
             if file_name.endswith(".content"):
-                with open(file_name, "r") as f:
+                with open(file_name, "r", encoding="utf-8") as f:
                     return load(f)
 
     def set_all_data(self):
         self.rm_file_metadata = self.get_metadata_file()
         if self.rm_file_metadata:
             self.rm_file_name = self.rm_file_metadata["visibleName"]
+            self.rm_file_name = self.rm_file_name.replace("\\","")
+            self.rm_file_name = self.rm_file_name.replace("/","")
             self.parent_file_hash = self.rm_file_metadata["parent"]
         self.rm_file_content_data = self.get_content_file()
         self.rm_file_type = self.determine_filetype()
